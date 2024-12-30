@@ -1,6 +1,6 @@
-"use client"; 
+"use client";
 
-export default function Error({ error, reset }) { 
+export default function Error({ error, reset }) {
   return (
     <div className="min-h-96 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-500">
       <h1 className="text-4xl font-bold text-red-600 dark:text-red-600">Something went wrong!</h1>
