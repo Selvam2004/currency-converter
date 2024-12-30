@@ -6,13 +6,19 @@ import Data from "../../assets/option";
 import Card from "@/components/currency/Card";
 
 function Currency() {
+  
   const [baseCurrency, setBaseCurrency] = useState("INR");
   const [currenciesData, setCurrenciesData] = useState([]);
   const [page,setPage] = useState(1);
   const [data,setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const total = Math.floor(currenciesData.length/9);
-
+  useEffect(()=>{
+    const initial = localStorage.getItem('initial');
+    if(initial){
+      setBaseCurrency(initial);
+    }
+  },[])
   useEffect(() => {
     const fetchCurrencies = async () => {
       setLoading(true);
@@ -25,6 +31,7 @@ function Currency() {
             value: data[country.code]?.value ,
           }));
           setCurrenciesData(formattedData); 
+          localStorage.setItem('initial',baseCurrency);
         }
         setLoading(false);
       } catch (err) {

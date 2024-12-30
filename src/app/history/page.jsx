@@ -142,10 +142,10 @@ function History() {
           <div className="flex flex-row mt-10 justify-between">
 
             {loading ? (
-              <div className="ms-8 mt-5">Loading...</div>
+              <div className="ms-8  mb-10 p-5">Loading...</div>
             ) : (
               <div
-                className={`p-5 mb-10 bg-blue-100 rounded-lg text-blue-900 ps-14 pe-14 ${
+                className={`p-5 mb-2 bg-blue-100 rounded-lg text-blue-900 ps-14 pe-14 ${
                   conversionResult == null ? "invisible" : ""
                 }`}
               >
