@@ -13,7 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Currency Converter"
+  title: "Currency Converter",
+  icons: "/logo.png"
 };
 
 export default function RootLayout({ children }) {

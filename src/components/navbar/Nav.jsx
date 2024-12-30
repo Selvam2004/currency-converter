@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-
+import logo from '@/assets/logo.png'
 function Nav() {
   const path = usePathname();  
   const [theme,setTheme] = useState('light');
@@ -17,12 +17,12 @@ function Nav() {
       href:"/converter"
     },
     {
-      name:"History",
-      href:"/history"
-    },
-    {
       name:"Currency",
       href:"/currency"
+    },
+    {
+      name:"History",
+      href:"/history"
     },
     {
       name:"About",
@@ -61,7 +61,7 @@ function Nav() {
   <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
     
     <div className='flex'>
-    <img src="https://flowbite.com/docs/images/logo.svg" className="h-8 me-3"/>
+    <img src={logo.src} className="h-8 me-3"/>
     <span className="text-2xl font-semibold">Currency Converter</span>
     </div>
     <div>
