@@ -2,61 +2,68 @@
 import api from "@/utils/api";
 import Data from "../../assets/option";
 import { useEffect, useState } from "react";
+import { useTheme } from "@/utils/themeProvider";
 
 function History() {
+  const {theme} = useTheme();
   const options = Data;
-  const [symbol, setSymbol] = useState("$");
-  const [amount, setAmount] = useState("");
-  const [fromCurrency, setFromCurrency] = useState("");
-  const [toCurrency, setToCurrency] = useState("");
-  const [date, setDate] = useState("");
-  const [error, setError] = useState("");
-  const [conversionResult, setConversionResult] = useState(null);
-  const [conversion, setConversion] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [convert,setConvert] = useState({
+    symbol : "$",
+    amount : "",
+    fromCurrency : "",
+    toCurrency : "",
+    date : "",
+    error : "",
+    conversionResult : null, 
+    conversion : [],
+    loading : false
+  });  
 
   useEffect(() => {
-    const sym = options.filter(value => value.code == fromCurrency);
+    const sym = options.filter(value => value.code == convert.fromCurrency);
     if (sym[0]) {
-      setSymbol(sym[0].symbol);
+      setConvert({...convert,symbol:sym[0].symbol});
     }
     else {
-      setSymbol("$");
+      setConvert({...convert,symbol:"$"});
     }
-  }, [fromCurrency])
+  }, [convert.fromCurrency])
+
+  const handleChange =(e)=>{
+    setConvert({
+      ...convert,
+      [e.target.name] : e.target.value,
+    })
+  }
 
   const handleSubmit = async () => {
-    if (amount && fromCurrency && toCurrency && date) {
-      setError("");
-      if (amount <= 0) {
-        setError("*Enter a valid amount");
+    if (convert.amount && convert.fromCurrency && convert.toCurrency && convert.date) {
+      setConvert({...convert,error:""});
+      if (convert.amount <= 0) {
+        setConvert({...convert,error:"*Enter valid amount"});
       } else {
-        setLoading(true);
-        const endpoint = `/v3/historical?date=${date}&currencies=${toCurrency}&base_currency=${fromCurrency}`;
+        setConvert({...convert,loading:true});
+        const endpoint = `/v3/historical?date=${convert.date}&currencies=${convert.toCurrency}&base_currency=${convert.fromCurrency}`;
         await api
           .get(endpoint)
           .then((res) => {
             const data = res?.data?.data;
-            const value = data[toCurrency]?.value;
-            setConversionResult(value);
-            setConversion([fromCurrency, toCurrency]);
-            setLoading(false);
+            const value = data[convert.toCurrency]?.value; 
+            setConvert({...convert,conversionResult:value,conversion:[convert.fromCurrency,convert.toCurrency],loading:false});
           })
           .catch((err) => {
-            console.log(err.message);
-            setError(err.message);
-            setLoading(false);
+            setConvert({...convert,error:err.message,loading:false});
           });
       }
     } else {
-      setError("*Please enter all details");
+      setConvert({...convert,error:"*Please enter all details"});
     }
   };
 
   return (
     <div className=" h-full flex flex-col">
 
-      <div className="w-4/6 h-auto m-auto shadow-2xl bg-white dark:bg-gray-950 dark:text-white rounded-3xl p-5">
+      <div className={`${theme=="light"?"bg-white":"bg-gray-950 text-white"} w-4/6 h-auto m-auto shadow-2xl rounded-3xl p-5`}>
 
         <div className="ms-3">
 
@@ -68,12 +75,13 @@ function History() {
               <label className="font-bold">Amount</label>
               <br />
               <div className="flex items-center mt-4 border-2 border-gray-500 rounded-lg">
-                <span className="px-4 border-r border-gray-300">{symbol}</span>
+                <span className="px-4 border-r border-gray-300">{convert.symbol}</span>
                 <input
                   type="number"
-                  onChange={(e) => setAmount(e.target.value)}
-                  value={amount}
-                  className="p-1 rounded-lg mb-2 mt-2 dark:bg-gray-950  focus:outline-none w-full"
+                  name="amount"
+                  onChange={handleChange}
+                  value={convert.amount}
+                  className={`${theme=="light"?"":"bg-gray-950  text-white"} p-1 rounded-lg mb-2 mt-2 focus:outline-none w-full`}
                   placeholder="Enter Amount"
                 />
               </div>
@@ -84,10 +92,11 @@ function History() {
               <br />
               <input
                 type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
+                name="date"
+                value={convert.date}
+                onChange={handleChange}
                 max={new Date().toISOString().split("T")[0]}
-                className=" mt-4 p-3 bg-white w-full border-2 dark:bg-gray-950  border-gray-500 rounded-lg"
+                className={`${theme=="light"?"bg-white":"bg-gray-950  text-white"} mt-4 p-3  w-full border-2 border-gray-500 rounded-lg`}
               />
             </div>
 
@@ -100,11 +109,10 @@ function History() {
               <label className="font-bold">From</label>
               <br />
               <select
-                value={fromCurrency}
-                onChange={(e) => {
-                  setFromCurrency(e.target.value)
-                }}
-                className="p-3.5 ps-5 bg-white mt-4 w-full border-2 dark:bg-gray-950  border-gray-500 rounded-lg"
+                value={convert.fromCurrency}
+                onChange={handleChange}
+                name="fromCurrency"
+                className={`${theme=="light"?"bg-white":"bg-gray-950  text-white"} p-3.5 ps-5 mt-4 w-full border-2 border-gray-500 rounded-lg`}
 
               >
                 <option value="">Choose the country</option>
@@ -120,9 +128,10 @@ function History() {
               <label className="font-bold">To</label>
               <br />
               <select
-                value={toCurrency}
-                onChange={(e) => setToCurrency(e.target.value)}
-                className="p-3.5 ps-5 bg-white mt-4 w-full border-2 dark:bg-gray-950  border-gray-500 rounded-lg"
+                value={convert.toCurrency}
+                onChange={handleChange}
+                name="toCurrency"
+                className={`${theme=="light"?"bg-white":"bg-gray-950 text-white"} p-3.5 ps-5 mt-4 w-full border-2 border-gray-500 rounded-lg`}
 
               >
                 <option value="">Choose the country</option>
@@ -137,25 +146,25 @@ function History() {
           </div>
 
 
-          {error && <span className="text-red-700 mt-3">{error}</span>}
+          {convert.error && <span className="text-red-700 mt-3">{convert.error}</span>}
 
           <div className="flex flex-row mt-10 justify-between">
 
-            {loading ? (
+            {convert.loading ? (
               <div className="ms-8  mb-10 p-5">Loading...</div>
             ) : (
               <div
-                className={`p-5 mb-2 bg-blue-100 rounded-lg text-blue-900 ps-14 pe-14 ${conversionResult == null ? "invisible" : ""
+                className={`p-5 mb-2 bg-blue-100 rounded-lg text-blue-900 ps-14 pe-14 ${convert.conversionResult == null ? "invisible" : ""
                   }`}
               >
-                {amount} {conversion[0]} ={" "}
+                {convert.amount} {convert.conversion[0]} ={" "}
                 <span className="font-bold text-2xl">
-                  {amount * conversionResult} {conversion[1]}
+                  {convert.amount * convert.conversionResult} {convert.conversion[1]}
                 </span>
                 <br />
                 <span>
-                  {amount} {conversion[1]} = {amount / conversionResult}{" "}
-                  {conversion[0]}
+                  {convert.amount} {convert.conversion[1]} = {convert.amount / convert.conversionResult}{" "}
+                  {convert.conversion[0]}
                 </span>
               </div>
             )}

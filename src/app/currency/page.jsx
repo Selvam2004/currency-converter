@@ -4,63 +4,68 @@ import { useEffect, useState } from "react";
 import api from "@/utils/api";
 import Data from "../../assets/option";
 import Card from "@/components/currency/Card";
+import { useTheme } from "@/utils/themeProvider";
 
 function Currency() {
+  const {theme} = useTheme();
+  const [currency,setCurrency] = useState({
+    baseCurrency : "INR",
+    currenciesData : [],
+    page : 1,
+    data : [],
+    error:"",
+    loading : false,
+  })
 
-  const [baseCurrency, setBaseCurrency] = useState("INR");
-  const [currenciesData, setCurrenciesData] = useState([]);
-  const [page, setPage] = useState(1);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const total = Math.floor(currenciesData.length / 9);
+  const total = Math.floor(currency.currenciesData.length / 9);
 
   useEffect(() => {
     const initial = localStorage.getItem('initial');
     if (initial) {
-      setBaseCurrency(initial);
+      setCurrency({...currency,baseCurrency : initial});
     }
-  }, [])
+  }, []);
   
   useEffect(() => {
     const fetchCurrencies = async () => {
-      setLoading(true);
+      setCurrency((currency)=>({...currency,loading:true}));
       try {
-        const res = await api.get(`/v3/latest?base_currency=${baseCurrency}`);
+        const res = await api.get(`/v3/latest?base_currency=${currency.baseCurrency}`);
         const data = res?.data?.data;
         if (data) {
           const formattedData = Data.map((country) => ({
             ...country,
             value: data[country.code]?.value,
-          }));
-          setCurrenciesData(formattedData);
-          localStorage.setItem('initial', baseCurrency);
+          })); 
+          setCurrency((currency)=>({...currency,currenciesData : formattedData}));
+          localStorage.setItem('initial', currency.baseCurrency);
         }
-        setLoading(false);
+        setCurrency((currency)=>({...currency,loading:false}));
       } catch (err) {
         console.error("Error fetching currency data:", err.message);
-        setLoading(false);
+        setCurrency((currency)=>({...currency,loading:false,error:err.message}));
       }
     };
 
     fetchCurrencies();
-  }, [baseCurrency]);
+  }, [currency.baseCurrency]);
 
   useEffect(() => {
-    const data = currenciesData?.slice(page * 9, (page * 9) + 9);
-    setData(data);
-  }, [baseCurrency, page, currenciesData]);
+    const data = currency.currenciesData?.slice(currency.page * 9, (currency.page * 9) + 9);
+    setCurrency((currency)=>({...currency,data : data}));
+  }, [currency.baseCurrency, currency.page, currency.currenciesData]);
 
   return (
-    <div className="p-8 bg-gray-100 dark:bg-gray-950 dark:text-white min-h-screen rounded-2xl">
+    <div className={`${theme=="light"?"bg-gray-100":"bg-gray-950 text-white" } p-8  min-h-screen rounded-2xl`}>
 
       <div className="flex items-center justify-between mb-6">
 
         <h1 className="text-3xl font-bold">Currency Dashboard</h1>
 
         <select
-          value={baseCurrency}
-          onChange={(e) => setBaseCurrency(e.target.value)}
-          className="p-3 rounded-lg border-2 border-gray-500 dark:bg-gray-950 "
+          value={currency.baseCurrency}
+          onChange={(e) => setCurrency((currency)=>({...currency,baseCurrency:e.target.value}))}
+          className={`p-3 rounded-lg border-2 border-gray-500  ${theme=="light"?"":"bg-gray-950"} `}
         >
           {Data.map((country, i) => (
             <option key={i} value={country.code}>
@@ -72,20 +77,20 @@ function Currency() {
 
       </div>
 
-      {loading ? (
+      {currency.loading ? (
         <p className="text-center text-lg">Loading currency data...</p>
-      ) : (
+      ) : currency.error ? <p className="text-center text-lg">{currency.error}</p> : (
         <div className="flex flex-wrap  ">
-          {data.map((currency, index) => (
+          {currency.data.map((currency, index) => (
             <Card key={index} currency={currency} />
           ))}
         </div>
       )}
-      {!loading && 
+      {!currency.loading && !currency.error &&
       <div className="text-center">
-        <button className="p-2 text-white rounded-lg ps-3 pe-4 bg-blue-700 me-16" onClick={() => setPage(page - 1)} disabled={page <= 1}>Previous</button>
-        <p className="inline">{page} of {total}</p>
-        <button className="p-2 text-white rounded-lg ps-8 pe-8 bg-blue-700 ms-16" onClick={() => setPage(page + 1)} disabled={page >= total}>Next</button>
+        <button className="p-2 text-white rounded-lg ps-3 pe-4 bg-blue-700 me-16" onClick={() => setCurrency((currency)=>({...currency,page:currency.page-1}))} disabled={currency.page <= 1}>Previous</button>
+        <p className="inline">{currency.page} of {total}</p>
+        <button className="p-2 text-white rounded-lg ps-8 pe-8 bg-blue-700 ms-16" onClick={() => setCurrency((currency)=>({...currency,page:currency.page+1}))} disabled={currency.page ==total}>Next</button>
       </div>}
 
 
