@@ -11,21 +11,21 @@ function HomePage() {
 
       <Image src={homeImage} fill alt="background" />
 
-      <div className={`${theme=='light'?"bg-black ":"bg-white"} absolute bg-opacity-50`}>
+      <div className={`${theme=='light'?"bg-white": "bg-black "} absolute bg-opacity-50`}>
 
         <div className="text-center p-8 rounded-lg shadow-lg">
 
-          <h1 className={`${theme=='light'?"text-white":"text-gray-900"} text-4xl font-bold  mb-4`}>
+          <h1 className={`${theme=='light'?"text-gray-900":"text-white"} text-4xl font-bold  mb-4`}>
             Welcome to Currency Converter
           </h1>
 
-          <p className={`${theme=='light'?" text-gray-300":"text-gray-900"} text-lg mb-6`}>
+          <p className={`${theme=='light'?"text-gray-900":" text-gray-300"} text-lg mb-6`}>
             Convert currencies with live exchange rates in just a click.
           </p>
 
           <Link href="/converter">
             <button
-              className={`${theme=='light'?"text-white":"text-black"} bg-blue-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 `}
+              className={`${theme=='light'?"text-black":"text-white"} bg-blue-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 `}
             >
               Get Started
             </button>

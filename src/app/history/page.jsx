@@ -14,7 +14,7 @@ function History() {
     toCurrency : "",
     date : "",
     error : "",
-    conversionResult : null, 
+    conversionResult : [], 
     conversion : [],
     loading : false
   });  
@@ -42,14 +42,15 @@ function History() {
       if (convert.amount <= 0) {
         setConvert({...convert,error:"*Enter valid amount"});
       } else {
+        
         setConvert({...convert,loading:true});
         const endpoint = `/v3/historical?date=${convert.date}&currencies=${convert.toCurrency}&base_currency=${convert.fromCurrency}`;
         await api
           .get(endpoint)
           .then((res) => {
             const data = res?.data?.data;
-            const value = data[convert.toCurrency]?.value; 
-            setConvert({...convert,conversionResult:value,conversion:[convert.fromCurrency,convert.toCurrency],loading:false});
+            const value = data[convert.toCurrency]?.value;  
+            setConvert({...convert,conversionResult:[value,convert.amount],conversion:[convert.fromCurrency,convert.toCurrency],loading:false,error:""});
           })
           .catch((err) => {
             setConvert({...convert,error:err.message,loading:false});
@@ -154,16 +155,16 @@ function History() {
               <div className="ms-8  mb-10 p-5">Loading...</div>
             ) : (
               <div
-                className={`p-5 mb-2 bg-blue-100 rounded-lg text-blue-900 ps-14 pe-14 ${convert.conversionResult == null ? "invisible" : ""
+                className={`p-5 mb-2 bg-blue-100 rounded-lg text-blue-900 ps-14 pe-14 ${convert.conversionResult[0] == null ? "invisible" : ""
                   }`}
               >
-                {convert.amount} {convert.conversion[0]} ={" "}
+                {convert.conversionResult[1]} {convert.conversion[0]} ={" "}
                 <span className="font-bold text-2xl">
-                  {convert.amount * convert.conversionResult} {convert.conversion[1]}
+                  {convert.conversionResult[1] * convert.conversionResult[0]} {convert.conversion[1]}
                 </span>
                 <br />
                 <span>
-                  {convert.amount} {convert.conversion[1]} = {convert.amount / convert.conversionResult}{" "}
+                  {convert.conversionResult[1]} {convert.conversion[1]} = {convert.conversionResult[1] / convert.conversionResult[0]}{" "}
                   {convert.conversion[0]}
                 </span>
               </div>

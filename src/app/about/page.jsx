@@ -6,7 +6,7 @@ function About() {
   return (
     <div className="flex flex-col items-center">
 
-      <div className={`${theme=='light'?"bg-white ":"bg-gray-950 text-white"}shadow-lg rounded-lg p-6 w-full mb-14 max-w-4xl`}>
+      <div className={`${theme=='light'?"bg-white ":"bg-gray-950 text-white"} shadow-lg rounded-lg p-6 w-full mb-14 max-w-4xl`}>
 
         <h1 className={`${theme=='light'?"text-blue-800":"text-blue-900"} text-4xl font-bold text-center mb-6`}>
           About Our Currency Converter
@@ -21,7 +21,7 @@ function About() {
 
         <div className="mt-6">
           <h2 className={`${theme=='light'?"text-gray-800":"text-white"} text-2xl font-semibold mb-4`}>Features</h2>
-          <ul className={`${theme=='light'?"text-gray-700":"text-white"} list-disc list-inside space-y-2`}>
+          <ul className={`${theme=='light'?"text-gray-700":"text-white"} list-disc list-inside`}>
             <li>Real-time exchange rates.</li>
             <li>Supports a wide range of global currencies.</li>
             <li>Simple and intuitive interface for seamless conversions.</li>

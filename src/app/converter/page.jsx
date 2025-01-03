@@ -12,7 +12,7 @@ function Converter() {
     fromCurrency : "",
     toCurrency : "",
     error : "",
-    conversionResult : null,
+    conversionResult : [],
     time : null,
     conversion : [],
     loading : false
@@ -49,7 +49,7 @@ function Converter() {
             const value = data[convert.toCurrency]?.value; 
             const time = res?.data?.meta?.last_updated_at;
 
-            setConvert({...convert,conversionResult:value,conversion:[convert.fromCurrency,convert.toCurrency],time:time,loading:false});
+            setConvert({...convert,conversionResult:[value,convert.amount],conversion:[convert.fromCurrency,convert.toCurrency],time:time,loading:false,error:""});
           })
           .catch(err => { 
             setConvert({...convert,error:err.message,loading:false});
@@ -113,16 +113,16 @@ function Converter() {
 
           <div className='flex flex-row mt-10 me-14 justify-between ms-2'>
 
-            {convert.loading ? <div className="ms-8 mt-5">Loading...</div> : <div className={`p-5  mb-10 bg-blue-100 rounded-lg text-blue-900 ps-14 pe-14 ${convert.conversionResult == null ? "invisible" : ""} `}>
-              {convert.amount} {convert.conversion[0]} = <span className='font-bold text-2xl'>{convert.amount * convert.conversionResult} {convert.conversion[1]}</span><br />
+            {convert.loading ? <div className="ms-8 mt-5">Loading...</div> : <div className={`p-5  mb-10 bg-blue-100 rounded-lg text-blue-900 ps-14 pe-14 ${convert.conversionResult[0] == null ? "invisible" : ""} `}>
+              {convert.conversionResult[1]} {convert.conversion[0]} = <span className='font-bold text-2xl'>{convert.conversionResult[1] * convert.conversionResult[0]} {convert.conversion[1]}</span><br />
               <span>
-                {convert.amount} {convert.conversion[1]} = {convert.amount / convert.conversionResult} {convert.conversion[0]}
+                {convert.conversionResult[1]} {convert.conversion[1]} = {convert.conversionResult[1] / convert.conversionResult[0]} {convert.conversion[0]}
               </span>
             </div>}
 
             <div className="flex flex-col items-end">
               <button onClick={handleSubmit} className='bg-blue-800 text-white flex rounded-3xl text-lg p-1 items-center ps-10 pe-10  mb-3'><span className="pe-2">Covert</span> <span className="text-5xl pb-2">&#8250;</span></button><br />
-              <span className={` ms-3 font-thin text-sm text-gray-500 ${convert.conversionResult == null ? "invisible" : ""} `}>last updated: {convert.time} </span>
+              <span className={` ms-3 font-thin text-sm text-gray-500 ${convert.conversionResult[1] == null ? "invisible" : ""} `}>last updated: {convert.time} </span>
             </div>
 
           </div>

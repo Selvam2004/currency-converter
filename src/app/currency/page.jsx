@@ -28,22 +28,23 @@ function Currency() {
   
   useEffect(() => {
     const fetchCurrencies = async () => {
-      setCurrency((currency)=>({...currency,loading:true}));
+      setCurrency((prev)=>({...prev,loading:true}));
       try {
-        const res = await api.get(`/v3/latest?base_currency=${currency.baseCurrency}`);
+        const endPoint=`/v3/latest?base_currency=${currency.baseCurrency}`; 
+        const res = await api.get(endPoint);
         const data = res?.data?.data;
         if (data) {
           const formattedData = Data.map((country) => ({
             ...country,
             value: data[country.code]?.value,
           })); 
-          setCurrency((currency)=>({...currency,currenciesData : formattedData}));
+          setCurrency((prev)=>({...prev,currenciesData : formattedData}));
           localStorage.setItem('initial', currency.baseCurrency);
         }
-        setCurrency((currency)=>({...currency,loading:false}));
+        setCurrency((prev)=>({...prev,loading:false}));
       } catch (err) {
         console.error("Error fetching currency data:", err.message);
-        setCurrency((currency)=>({...currency,loading:false,error:err.message}));
+        setCurrency((prev)=>({...prev,loading:false,error:err.message}));
       }
     };
 
@@ -52,7 +53,7 @@ function Currency() {
 
   useEffect(() => {
     const data = currency.currenciesData?.slice(currency.page * 9, (currency.page * 9) + 9);
-    setCurrency((currency)=>({...currency,data : data}));
+    setCurrency((prev) => ({ ...prev, data }));
   }, [currency.baseCurrency, currency.page, currency.currenciesData]);
 
   return (
@@ -64,7 +65,7 @@ function Currency() {
 
         <select
           value={currency.baseCurrency}
-          onChange={(e) => setCurrency((currency)=>({...currency,baseCurrency:e.target.value}))}
+          onChange={(e) => setCurrency((prev)=>({...prev,baseCurrency:e.target.value}))}
           className={`p-3 rounded-lg border-2 border-gray-500  ${theme=="light"?"":"bg-gray-950"} `}
         >
           {Data.map((country, i) => (
